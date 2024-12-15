@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설문조사</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .question {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .option {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .results {
+            margin-top: 30px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="question">가장 어려운 과목은?</div>
+    <div class="option">
+        <button onclick="vote('국어')">국어</button>
+    </div>
+    <div class="option">
+        <button onclick="vote('수학')">수학</button>
+    </div>
+    <div class="option">
+        <button onclick="vote('영어')">영어</button>
+    </div>
+    <div class="results">
+        <div>국어: <span id="korean">{{ votes['국어'] }}</span></div>
+        <div>수학: <span id="math">{{ votes['수학'] }}</span></div>
+        <div>영어: <span id="english">{{ votes['영어'] }}</span></div>
+    </div>
+    <script>
+        function vote(subject) {
+            fetch("/vote", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ subject: subject })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("korean").innerText = data.votes["국어"];
+                    document.getElementById("math").innerText = data.votes["수학"];
+                    document.getElementById("english").innerText = data.votes["영어"];
+                } else {
+                    alert("오류가 발생했습니다!");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
