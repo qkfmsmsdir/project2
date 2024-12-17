@@ -90,7 +90,7 @@ def quiz_page(subject):
     with st.form(f"{subject}_quiz_form"):
         score = 0
         for idx, question in enumerate(questions):
-            st.write(f"**문제 {idx+1}: {question['question']}**")
+            st.write(f"**(문제 {idx+1}) {question['question']}**")
             answer = st.radio(
                 "",
                 question["options"],
