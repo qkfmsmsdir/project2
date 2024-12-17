@@ -1,24 +1,15 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib import rc
+from matplotlib import rcParams
 import json
 import os
 
 # 한글 폰트 설정 (Windows, Mac, Linux 호환)
 # --------------------------
 def set_korean_font():
-    # Windows: Malgun Gothic
-    if os.name == "nt":
-        rc('font', family='Malgun Gothic')
-    # Mac: AppleGothic
-    elif os.name == "posix":
-        rc('font', family='AppleGothic')
-    else:
-        # Linux (사용 가능한 폰트 확인 필요)
-        rc('font', family='DejaVu Sans')
-    # 음수 표시 오류 제거
-    plt.rcParams['axes.unicode_minus'] = False
+    rcParams['font.family'] = 'Nanum Gothic'
+    rcParams['axes.unicode_minus'] = False
 
 # 폰트 설정
 set_korean_font()
