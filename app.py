@@ -5,13 +5,11 @@ from matplotlib import rcParams
 import json
 import os
 
-# 한글 폰트 설정 (Windows, Mac, Linux 호환)
-# --------------------------
+# 한글 폰트 설정 
 def set_korean_font():
     rcParams['font.family'] = 'Nanum Gothic'
     rcParams['axes.unicode_minus'] = False
 
-# 폰트 설정
 set_korean_font()
 
 
@@ -26,9 +24,6 @@ def load_results():
 def save_results(results):
     with open("results.json", "w", encoding="utf-8") as f:
         json.dump(results, f)
-
-# 점수 불러오기
-results = load_results()
 
 
 
@@ -70,7 +65,10 @@ quiz_data = {
 st.sidebar.title("메뉴")
 page = st.sidebar.radio("페이지를 선택하세요", ["국어", "수학", "통합교과", "점수 확인"])
 
-# --------------------------
+# 상태 관리용 초기 설정
+if "results" not in st.session_state:
+    st.session_state.results = load_results()
+
 # 과목별 퀴즈 페이지
 # --------------------------
 def quiz_page(subject):
@@ -83,7 +81,7 @@ def quiz_page(subject):
         for idx, question in enumerate(questions):
             st.write(f"**(문제 {idx+1}) {question['question']}**")
             answer = st.radio(
-                "",
+                "알맞은 답을 고르세요.",
                 question["options"],
                 index=None,
                 key=f"{subject}_question_{idx}"
@@ -106,43 +104,26 @@ def quiz_page(subject):
             results[subject] = score
             save_results(results)
             st.success("점수가 저장되었습니다!")
+            st.session_state.results[subject] = score
+            save_results(st.session_state.results)
 
-# --------------------------
 # 점수 확인 페이지
-# --------------------------
-# --------------------------
-# 점수 초기화 함수
-# --------------------------
-def reset_results():
-    global results
-    results = {}
-    save_results(results)
-    st.session_state["reset"] = True  # 상태값으로 초기화 신호 설정
-
-# --------------------------
-# 점수 확인 페이지
-# --------------------------
 def score_page():
     st.title("저장된 점수 확인")
-    
-    # 점수 초기화 확인
-    if "reset" not in st.session_state:
-        st.session_state["reset"] = False
-
-    # 초기화 버튼
-    if st.button("점수 초기화"):
-        reset_results()
-        st.session_state["reset"] = True  # 초기화 신호 설정
-
-
-    # 초기화된 상태 처리
-    if st.session_state["reset"]:
-        st.info("점수가 초기화되었습니다. 새 점수를 추가해주세요.")
-        return  # 초기화 후 페이지 중단
-
-    if not results:
+    if not st.session_state.results:
         st.warning("저장된 점수가 없습니다.")
     else:
+        df = pd.DataFrame(list(st.session_state.results.items()), columns=["과목", "점수"])
+        st.dataframe(df)
+    
+    # 점수 초기화
+      # 점수 초기화
+        if st.button("점수 초기화"):
+            st.session_state.results = {}
+            save_results({})
+            st.success("점수가 초기화되었습니다.")
+
+      
         # 점수 표 표시
         st.subheader("과목별 점수표")
         
